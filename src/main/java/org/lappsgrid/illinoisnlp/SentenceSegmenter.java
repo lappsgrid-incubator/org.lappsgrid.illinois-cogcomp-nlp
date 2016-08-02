@@ -20,9 +20,7 @@ import org.lappsgrid.vocabulary.Features;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Baian on 8/1/2016.
- */
+
 public class SentenceSegmenter implements ProcessingService{
     public SentenceSegmenter() {
     }
