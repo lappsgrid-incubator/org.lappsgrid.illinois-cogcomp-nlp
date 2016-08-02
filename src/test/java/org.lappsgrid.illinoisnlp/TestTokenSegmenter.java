@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.lappsgrid.api.WebService;
+import org.lappsgrid.discriminator.Discriminators;
+import org.lappsgrid.serialization.Data;
 
 import java.io.IOException;
 
@@ -30,7 +32,9 @@ public class TestTokenSegmenter {
     @Test
     public void testExecute() {
         String testString = "Miss Watson would say, \"Don't put your feet up there, Huckleberry;\" and \"Don't scrunch up like that, Huckleberry—set up straight;\" and pretty soon she would say, \"Don't gap and stretch like that, Huckleberry—why don't you try to behave?\" ";
-        String results = this.service.execute(testString);
+        Data data = new Data(Discriminators.Uri.TEXT, testString);
+
+        String results = this.service.execute(data.asJson());
 
         System.out.println(results);
     }
