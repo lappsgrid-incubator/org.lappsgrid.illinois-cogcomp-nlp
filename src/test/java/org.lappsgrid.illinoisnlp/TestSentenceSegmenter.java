@@ -49,8 +49,10 @@ public class TestSentenceSegmenter {
                 "\"Once more,\" said the man, staring at me. \"Give it mouth!\"\n" +
                 "\"Pip. Pip, sir.\"\n" +
                 "\"Show us where you live,\" said the man. \"Pint out the place!\"";
-        String string = this.service.execute(testString);
 
-        System.out.println(string);
+        Data data = new Data(Uri.TEXT, testString);
+        String results = this.service.execute(data.asJson());
+
+        System.out.println(results);
     }
 }
