@@ -36,6 +36,12 @@
             <artifactId>illinois-pos</artifactId>
             <version>3.0.58</version>
         </dependency>
+
+        <dependency>
+            <groupId>edu.illinois.cs.cogcomp</groupId>
+            <artifactId>illinois-tokenizer</artifactId>
+            <version>3.0.58</version>
+        </dependency>
     </dependencies>
 
 
