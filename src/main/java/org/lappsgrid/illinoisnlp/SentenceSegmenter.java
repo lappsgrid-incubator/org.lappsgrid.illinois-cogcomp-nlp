@@ -1,11 +1,8 @@
 package org.lappsgrid.illinoisnlp;
 
-import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Sentence;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
-import edu.illinois.cs.cogcomp.nlp.tokenizer.Tokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
@@ -15,9 +12,7 @@ import org.lappsgrid.serialization.Serializer;
 import org.lappsgrid.serialization.lif.Annotation;
 import org.lappsgrid.serialization.lif.Container;
 import org.lappsgrid.serialization.lif.View;
-import org.lappsgrid.vocabulary.Features;
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -78,10 +73,9 @@ public class SentenceSegmenter implements ProcessingService{
 
         resultsView.addContains(Discriminators.Uri.SENTENCE, this.getClass().getName(), "sentence:uiuc");
 
-        Container resultsContainer= new Container();
-        resultsContainer.setText(container.getText());
-        resultsContainer.addView(resultsView);
-        data = new DataContainer(resultsContainer);
+
+        container.addView(resultsView);
+        data = new DataContainer(container);
 
         return data.asPrettyJson();
     }

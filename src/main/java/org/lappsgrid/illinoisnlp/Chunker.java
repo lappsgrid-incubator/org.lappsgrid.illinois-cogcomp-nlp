@@ -4,7 +4,10 @@ package org.lappsgrid.illinoisnlp;
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
 import edu.illinois.cs.cogcomp.chunker.main.ChunkerAnnotator;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.SpanLabelView;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotationUtilities;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.pos.POSAnnotator;
@@ -16,7 +19,6 @@ import org.lappsgrid.serialization.Serializer;
 import org.lappsgrid.serialization.lif.Annotation;
 import org.lappsgrid.serialization.lif.Container;
 import org.lappsgrid.serialization.lif.View;
-import org.lappsgrid.vocabulary.Features;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +71,7 @@ public class Chunker implements ProcessingService{
         TokenizerTextAnnotationBuilder taBuilder = new TokenizerTextAnnotationBuilder(illinoisTokenizer);
         TextAnnotation ta = taBuilder.createTextAnnotation(rawText);
 
+        // Annotating with the chunker
         try {
             ta.addView(posAnnotator);
             chunkerAnnotator.addView(ta);
@@ -76,22 +79,21 @@ public class Chunker implements ProcessingService{
             e.printStackTrace();
             return new Data<>(Discriminators.Uri.ERROR, "Unable to annotate text.").asJson();
         }
-
         SpanLabelView spanLabelView = (SpanLabelView) ta.getView(ViewNames.SHALLOW_PARSE);
 
         List<Constituent> nodes = spanLabelView.getConstituents();
         Collections.sort(nodes, TextAnnotationUtilities.constituentStartComparator);
-
         int numOfNodes = nodes.size();
-        for (int i = 0; i < numOfNodes; i++){
+        for (int i = 0; i < numOfNodes; i++){ // for each chunk (node)
             Constituent node = nodes.get(i);
 
             int start = node.getStartCharOffset();
             int end = node.getEndCharOffset();
 
-            Annotation a = new Annotation("chunk" + i, Discriminators.Uri.CHUNK, start, end);
-            a.addFeature(Discriminators.Uri.MARKABLE, node.getTokenizedSurfaceForm());
-            a.addFeature(Discriminators.Uri.JSON, node.getLabel());
+            Annotation a = new Annotation("chunk" + i, "Chunk", start, end);
+            a.setAtType(Discriminators.Uri.CHUNK);
+            a.addFeature(Discriminators.Uri.TEXT, node.getTokenizedSurfaceForm());
+            a.addFeature("chunk type", node.getLabel());
             resultsView.add(a);
         }
 

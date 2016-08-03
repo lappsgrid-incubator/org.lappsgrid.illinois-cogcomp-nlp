@@ -67,16 +67,16 @@ public class TokenSegmenter implements ProcessingService {
             int start = offsets.getFirst();
             int end = offsets.getSecond() - 1;
             Annotation a = new Annotation("tok" + i , Features.Token.WORD, start, end);
+            a.setAtType(Discriminators.Uri.TOKEN);
             a.addFeature(Discriminators.Uri.TOKEN, token);
             resultsView.add(a);
         }
 
         resultsView.addContains(Discriminators.Uri.TOKEN, this.getClass().getName(), "tokens");
 
-        Container resultsContainer= new Container();
-        resultsContainer.setText(container.getText());
-        resultsContainer.addView(resultsView);
-        data = new DataContainer(resultsContainer);
+
+        container.addView(resultsView);
+        data = new DataContainer(container);
 
         return data.asPrettyJson();
     }
