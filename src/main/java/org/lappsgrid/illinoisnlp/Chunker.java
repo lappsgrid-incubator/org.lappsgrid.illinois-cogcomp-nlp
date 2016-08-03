@@ -1,12 +1,13 @@
 package org.lappsgrid.illinoisnlp;
 
-import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
-import edu.illinois.cs.cogcomp.core.datastructures.Pair;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Sentence;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
+
+import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
+import edu.illinois.cs.cogcomp.chunker.main.ChunkerAnnotator;
+import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.*;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
-import edu.illinois.cs.cogcomp.nlp.tokenizer.Tokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.pos.POSAnnotator;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
 import org.lappsgrid.serialization.Data;
@@ -17,12 +18,12 @@ import org.lappsgrid.serialization.lif.Container;
 import org.lappsgrid.serialization.lif.View;
 import org.lappsgrid.vocabulary.Features;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-
-public class SentenceSegmenter implements ProcessingService{
-    public SentenceSegmenter() {
+public class Chunker implements ProcessingService{
+    public Chunker() {
     }
 
     @Override
@@ -59,24 +60,42 @@ public class SentenceSegmenter implements ProcessingService{
 
         View resultsView = container.newView();
 
-        // Set up the TextAnnotationBuilder
+        // the annotators
+        POSAnnotator posAnnotator = new POSAnnotator(); // required before chunking
+        ChunkerAnnotator chunkerAnnotator = new ChunkerAnnotator();
+
+        // Set up the TextAnnotationBuilder and create a TextAnnotation
         IllinoisTokenizer illinoisTokenizer = new IllinoisTokenizer();
         TokenizerTextAnnotationBuilder taBuilder = new TokenizerTextAnnotationBuilder(illinoisTokenizer);
-
-        // Put input through the taBuilder and get ouput
         TextAnnotation ta = taBuilder.createTextAnnotation(rawText);
-        int numberOfSentences = ta.getNumberOfSentences();
-        for (int i = 0; i < numberOfSentences; i++){
-            Sentence sentence = ta.getSentence(i);
-            int start = sentence.getStartSpan();
-            int end = sentence.getEndSpan();
-            Annotation a = new Annotation("sentence" + i, "Sentence" ,start, end);
-            a.setAtType(Discriminators.Uri.SENTENCE);
-            a.addFeature(Discriminators.Uri.TEXT, sentence.getText());
+
+        try {
+            ta.addView(posAnnotator);
+            chunkerAnnotator.addView(ta);
+        } catch (AnnotatorException e){
+            e.printStackTrace();
+            return new Data<>(Discriminators.Uri.ERROR, "Unable to annotate text.").asJson();
+        }
+
+        SpanLabelView spanLabelView = (SpanLabelView) ta.getView(ViewNames.SHALLOW_PARSE);
+
+        List<Constituent> nodes = spanLabelView.getConstituents();
+        Collections.sort(nodes, TextAnnotationUtilities.constituentStartComparator);
+
+        int numOfNodes = nodes.size();
+        for (int i = 0; i < numOfNodes; i++){
+            Constituent node = nodes.get(i);
+
+            int start = node.getStartCharOffset();
+            int end = node.getEndCharOffset();
+
+            Annotation a = new Annotation("chunk" + i, Discriminators.Uri.CHUNK, start, end);
+            a.addFeature(Discriminators.Uri.MARKABLE, node.getTokenizedSurfaceForm());
+            a.addFeature(Discriminators.Uri.JSON, node.getLabel());
             resultsView.add(a);
         }
 
-        resultsView.addContains(Discriminators.Uri.SENTENCE, this.getClass().getName(), "sentence:uiuc");
+        resultsView.addContains(Discriminators.Uri.CHUNK, this.getClass().getName(), "chunks");
 
         Container resultsContainer= new Container();
         resultsContainer.setText(container.getText());
