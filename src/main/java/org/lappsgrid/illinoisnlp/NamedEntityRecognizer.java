@@ -1,11 +1,12 @@
 package org.lappsgrid.illinoisnlp;
 
-
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.SpanLabelView;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
+import edu.illinois.cs.cogcomp.ner.NERAnnotator;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.pos.POSAnnotator;
@@ -19,12 +20,15 @@ import org.lappsgrid.serialization.lif.Container;
 import org.lappsgrid.serialization.lif.View;
 import org.lappsgrid.vocabulary.Features;
 
+import java.io.IOException;
 import java.util.List;
 
-public class POS implements ProcessingService {
+public class NamedEntityRecognizer implements ProcessingService {
 
+    private NERAnnotator nerAnnotator;
 
-    public POS() {
+    public NamedEntityRecognizer() throws IOException{
+        this.nerAnnotator = new NERAnnotator(ViewNames.NER_ONTONOTES);
     }
 
     @Override
@@ -67,35 +71,34 @@ public class POS implements ProcessingService {
         TextAnnotation ta = taBuilder.createTextAnnotation(rawText);
 
         // annotate
-        POSAnnotator posAnnotator = new POSAnnotator();
         try {
-            posAnnotator.addView(ta);
-        } catch (AnnotatorException e) {
+            ta.addView(new POSAnnotator());
+        } catch (AnnotatorException e){
             e.printStackTrace();
-            return "Unable to annotate.";
+            return null;
         }
+        nerAnnotator.addView(ta);
 
-        TokenLabelView labelView = (TokenLabelView) ta.getView(ViewNames.POS);
-        List<Constituent> tokens = labelView.getConstituents();
-        int numTokens = tokens.size();
-        for (int i = 0; i < numTokens; i++){
-            Constituent token = tokens.get(i);
-            String tokenString = token.getTokenizedSurfaceForm();
 
-            int start = token.getStartCharOffset();
-            int end = token.getEndCharOffset() - 1;
+        SpanLabelView labelView = (SpanLabelView) ta.getView(ViewNames.NER_ONTONOTES);
+        List<Constituent> nodes = labelView.getConstituents();
+        int numNodes = nodes.size();
+        for (int i = 0; i < numNodes; i++){
+            Constituent node = nodes.get(i);
+            String nodeString = node.getTokenizedSurfaceForm();
 
-            Annotation a = new Annotation("tok" + i, "token", start, end);
+            int start = node.getStartCharOffset();
+            int end = node.getEndCharOffset() - 1;
 
-            a.setAtType(Discriminators.Uri.POS);
-            a.addFeature(Discriminators.Uri.TOKEN, tokenString);
-            a.addFeature(Features.Token.POS, token.getLabel());
+            Annotation a = new Annotation("namedentity" + i, "Named Entity", start, end);
+            a.setAtType(Discriminators.Uri.ANNOTATION);
+            a.addFeature(Discriminators.Uri.MARKABLE, nodeString);
+            a.addFeature(Features.NamedEntity.CATEGORY, node.getLabel());
             resultsView.add(a);
         }
 
-        resultsView.addContains(Discriminators.Uri.POS, this.getClass().getName(), "pos:uiuc");
+        resultsView.addContains(Discriminators.Uri.POS, this.getClass().getName(), "named-entities:uiuc");
 
-        container.addView(resultsView);
         data = new DataContainer(container);
 
         return data.asPrettyJson();
