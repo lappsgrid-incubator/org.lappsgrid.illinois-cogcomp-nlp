@@ -1,12 +1,10 @@
 package org.lappsgrid.illinoisnlp;
 
-
 import edu.illinois.cs.cogcomp.annotation.AnnotatorException;
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
-import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TreeView;
 import edu.illinois.cs.cogcomp.nlp.lemmatizer.IllinoisLemmatizer;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
@@ -23,10 +21,11 @@ import org.lappsgrid.vocabulary.Features;
 
 import java.util.List;
 
-public class POS implements ProcessingService {
+
+public class Lemmatizer implements ProcessingService {
 
 
-    public POS() {
+    public Lemmatizer() {
     }
 
     @Override
@@ -70,14 +69,22 @@ public class POS implements ProcessingService {
 
         // annotate
         POSAnnotator posAnnotator = new POSAnnotator();
+        IllinoisLemmatizer illinoisLemmatizer = new IllinoisLemmatizer();
         try {
             posAnnotator.addView(ta);
         } catch (AnnotatorException e) {
             e.printStackTrace();
-            return "Unable to annotate.";
+            return "Unable to annotate part of speech.";
+        }
+        try {
+            illinoisLemmatizer.addView(ta);
+        } catch (AnnotatorException e) {
+            e.printStackTrace();
+            return "Unable to annotate lemmas.";
         }
 
-        TokenLabelView labelView = (TokenLabelView) ta.getView(ViewNames.POS);
+
+        TokenLabelView labelView = (TokenLabelView) ta.getView(ViewNames.LEMMA);
         List<Constituent> tokens = labelView.getConstituents();
         int numTokens = tokens.size();
         for (int i = 0; i < numTokens; i++){
@@ -89,19 +96,16 @@ public class POS implements ProcessingService {
 
             Annotation a = new Annotation("tok" + i, "token", start, end);
 
-            a.setAtType(Discriminators.Uri.POS);
+            a.setAtType(Discriminators.Uri.LEMMA);
             a.addFeature(Discriminators.Uri.TOKEN, tokenString);
-            a.addFeature(Features.Token.POS, token.getLabel());
+            a.addFeature(Features.Token.LEMMA, token.getLabel());
             resultsView.add(a);
         }
 
-        resultsView.addContains(Discriminators.Uri.POS, this.getClass().getName(), "pos:uiuc");
+        resultsView.addContains(Discriminators.Uri.LEMMA, this.getClass().getName(), "lemma:uiuc");
 
         data = new DataContainer(container);
 
         return data.asPrettyJson();
     }
 }
-
-
-
