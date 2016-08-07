@@ -75,7 +75,6 @@ public class TokenSegmenter implements ProcessingService {
         resultsView.addContains(Discriminators.Uri.TOKEN, this.getClass().getName(), "tokens");
 
 
-        container.addView(resultsView);
         data = new DataContainer(container);
 
         return data.asPrettyJson();

@@ -32,7 +32,7 @@ public class TestLemmatizer {
 
     @Test
     public void testExecute() {
-        String testString = "They could run if they wanted to, but he wants their songs.";
+        String testString = "They could be running if they wanted to, but he wants their songs.";
         Data data = new Data(Discriminators.Uri.TEXT, testString);
 
         // call `execute()` with jsonized input,
