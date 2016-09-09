@@ -112,15 +112,31 @@ public class NamedEntityRecognizer implements ProcessingService {
         int numNodes = nodes.size();
         for (int i = 0; i < numNodes; i++){
             Constituent node = nodes.get(i);
-            String nodeString = node.getTokenizedSurfaceForm();
+            // String nodeString = node.getTokenizedSurfaceForm();
 
             int start = node.getStartCharOffset();
             int end = node.getEndCharOffset() - 1;
 
             Annotation a = new Annotation("namedentity" + i, "Named Entity", start, end);
-            a.setAtType(Discriminators.Uri.ANNOTATION);
-            // a.addFeature(Discriminators.Uri.MARKABLE, nodeString);
-            a.addFeature(Features.NamedEntity.CATEGORY, node.getLabel());
+
+            String namedEntityType = node.getLabel();
+            switch (namedEntityType){
+                case "PERSON":
+                    a.setAtType(Discriminators.Uri.PERSON);
+                    break;
+                case "DATE":
+                    a.setAtType(Discriminators.Uri.DATE);
+                    break;
+                case "LOC":
+                    a.setAtType(Discriminators.Uri.LOCATION);
+                    break;
+                case "ORG":
+                    a.setAtType(Discriminators.Uri.ORGANIZATION);
+                    break;
+                default:
+                    a.setAtType(Discriminators.Uri.ANNOTATION);
+                    a.addFeature(Features.NamedEntity.CATEGORY, namedEntityType);
+            }
             resultsView.add(a);
         }
 
