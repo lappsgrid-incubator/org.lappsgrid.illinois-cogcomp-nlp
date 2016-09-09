@@ -11,6 +11,8 @@ import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.pos.POSAnnotator;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
+import org.lappsgrid.metadata.IOSpecification;
+import org.lappsgrid.metadata.ServiceMetadata;
 import org.lappsgrid.serialization.Data;
 import org.lappsgrid.serialization.DataContainer;
 import org.lappsgrid.serialization.Serializer;
@@ -24,15 +26,36 @@ import java.util.List;
 
 public class Lemmatizer implements ProcessingService {
 
+    private String metadata;
 
     public Lemmatizer() {
+        ServiceMetadata md = new ServiceMetadata();
+
+        md.setName(this.getClass().getName());
+        md.setAllow(Discriminators.Uri.ANY);
+        md.setDescription("UIUC Lemmatizer");
+        md.setVendor("http://www.lappsgrid.org");
+        md.setLicense(Discriminators.Uri.APACHE2);
+
+        IOSpecification requires = new IOSpecification();
+        requires.addFormat(Discriminators.Uri.TEXT);
+        requires.addLanguage("en");
+
+        IOSpecification produces = new IOSpecification();
+        produces.addFormat(Discriminators.Uri.LAPPS);
+        produces.addLanguage("en");
+
+        md.setRequires(requires);
+        md.setProduces(produces);
+
+        Data<ServiceMetadata> data = new Data<>(Discriminators.Uri.META, md);
+        metadata = data.asPrettyJson();
     }
 
     @Override
     public String getMetadata() {
-        return null;
+        return metadata;
     }
-
 
     @Override
     public String execute(String input) {
@@ -96,8 +119,8 @@ public class Lemmatizer implements ProcessingService {
 
             Annotation a = new Annotation("tok" + i, "token", start, end);
 
-            a.setAtType(Discriminators.Uri.LEMMA);
-            a.addFeature(Discriminators.Uri.TOKEN, tokenString);
+            a.setAtType(Discriminators.Uri.TOKEN);
+            a.addFeature(Features.Token.WORD, tokenString);
             a.addFeature(Features.Token.LEMMA, token.getLabel());
             resultsView.add(a);
         }

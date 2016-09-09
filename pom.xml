@@ -17,6 +17,28 @@
         <version>2.0.5</version>
     </parent>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.anc.maven.plugins</groupId>
+                <artifactId>anc-maven-plugin</artifactId>
+                <version>1.0.7</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <package>org.lappsgrid.illinoisnlp</package>
+                        </configuration>
+                        <goals>
+                            <goal>version</goal>
+                            <goal>version-class</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <repositories>
         <repository>
             <id>CogcompSoftware</id>

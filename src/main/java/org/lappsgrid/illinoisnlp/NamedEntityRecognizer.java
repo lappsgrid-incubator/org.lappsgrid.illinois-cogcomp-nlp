@@ -10,8 +10,11 @@ import edu.illinois.cs.cogcomp.ner.NERAnnotator;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.pos.POSAnnotator;
+import org.apache.axis.Version;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
+import org.lappsgrid.metadata.IOSpecification;
+import org.lappsgrid.metadata.ServiceMetadata;
 import org.lappsgrid.serialization.Data;
 import org.lappsgrid.serialization.DataContainer;
 import org.lappsgrid.serialization.Serializer;
@@ -26,15 +29,39 @@ import java.util.List;
 public class NamedEntityRecognizer implements ProcessingService {
 
     private NERAnnotator nerAnnotator;
+    private String metadata;
 
     public NamedEntityRecognizer() throws IOException{
         this.nerAnnotator = new NERAnnotator(ViewNames.NER_ONTONOTES);
+
+        ServiceMetadata md = new ServiceMetadata();
+
+        md.setName(this.getClass().getName());
+        md.setAllow(Discriminators.Uri.ANY);
+        md.setDescription("UIUC Part of Speech Tagger");
+        md.setVendor("http://www.lappsgrid.org");
+        md.setLicense(Discriminators.Uri.APACHE2);
+
+        IOSpecification requires = new IOSpecification();
+        requires.addFormat(Discriminators.Uri.TEXT);
+        requires.addLanguage("en");
+
+        IOSpecification produces = new IOSpecification();
+        produces.addFormat(Discriminators.Uri.LAPPS);
+        produces.addLanguage("en");
+
+        md.setRequires(requires);
+        md.setProduces(produces);
+
+        Data<ServiceMetadata> data = new Data<>(Discriminators.Uri.META, md);
+        metadata = data.asPrettyJson();
     }
 
     @Override
     public String getMetadata() {
-        return null;
+        return metadata;
     }
+
 
 
     @Override
@@ -92,7 +119,7 @@ public class NamedEntityRecognizer implements ProcessingService {
 
             Annotation a = new Annotation("namedentity" + i, "Named Entity", start, end);
             a.setAtType(Discriminators.Uri.ANNOTATION);
-            a.addFeature(Discriminators.Uri.MARKABLE, nodeString);
+            // a.addFeature(Discriminators.Uri.MARKABLE, nodeString);
             a.addFeature(Features.NamedEntity.CATEGORY, node.getLabel());
             resultsView.add(a);
         }

@@ -13,6 +13,8 @@ import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.pos.POSAnnotator;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
+import org.lappsgrid.metadata.IOSpecification;
+import org.lappsgrid.metadata.ServiceMetadata;
 import org.lappsgrid.serialization.Data;
 import org.lappsgrid.serialization.DataContainer;
 import org.lappsgrid.serialization.Serializer;
@@ -25,13 +27,38 @@ import java.util.List;
 import java.util.Map;
 
 public class Chunker implements ProcessingService{
+
+    private String metadata;
+
     public Chunker() {
+        ServiceMetadata md = new ServiceMetadata();
+
+        md.setName(this.getClass().getName());
+        md.setAllow(Discriminators.Uri.ANY);
+        md.setDescription("UIUC Chunker");
+        md.setVendor("http://www.lappsgrid.org");
+        md.setLicense(Discriminators.Uri.APACHE2);
+
+        IOSpecification requires = new IOSpecification();
+        requires.addFormat(Discriminators.Uri.TEXT);
+        requires.addLanguage("en");
+
+        IOSpecification produces = new IOSpecification();
+        produces.addFormat(Discriminators.Uri.LAPPS);
+        produces.addLanguage("en");
+
+        md.setRequires(requires);
+        md.setProduces(produces);
+
+        Data<ServiceMetadata> data = new Data<>(Discriminators.Uri.META, md);
+        metadata = data.asPrettyJson();
     }
 
     @Override
     public String getMetadata() {
-        return null;
+        return metadata;
     }
+
 
 
     @Override

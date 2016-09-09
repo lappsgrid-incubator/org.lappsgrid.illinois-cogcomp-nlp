@@ -6,6 +6,8 @@ import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
+import org.lappsgrid.metadata.IOSpecification;
+import org.lappsgrid.metadata.ServiceMetadata;
 import org.lappsgrid.serialization.Data;
 import org.lappsgrid.serialization.DataContainer;
 import org.lappsgrid.serialization.Serializer;
@@ -17,12 +19,36 @@ import java.util.Map;
 
 
 public class SentenceSegmenter implements ProcessingService{
+
+    private String metadata;
+
     public SentenceSegmenter() {
+        ServiceMetadata md = new ServiceMetadata();
+
+        md.setName(this.getClass().getName());
+        md.setAllow(Discriminators.Uri.ANY);
+        md.setDescription("UIUC Sentence Segmenter");
+        md.setVendor("http://www.lappsgrid.org");
+        md.setLicense(Discriminators.Uri.APACHE2);
+
+        IOSpecification requires = new IOSpecification();
+        requires.addFormat(Discriminators.Uri.TEXT);
+        requires.addLanguage("en");
+
+        IOSpecification produces = new IOSpecification();
+        produces.addFormat(Discriminators.Uri.LAPPS);
+        produces.addLanguage("en");
+
+        md.setRequires(requires);
+        md.setProduces(produces);
+
+        Data<ServiceMetadata> data = new Data<>(Discriminators.Uri.META, md);
+        metadata = data.asPrettyJson();
     }
 
     @Override
     public String getMetadata() {
-        return null;
+        return metadata;
     }
 
 
@@ -67,14 +93,12 @@ public class SentenceSegmenter implements ProcessingService{
             int end = sentence.getEndSpan();
             Annotation a = new Annotation("sentence" + i, "Sentence" ,start, end);
             a.setAtType(Discriminators.Uri.SENTENCE);
-            a.addFeature(Discriminators.Uri.TEXT, sentence.getText());
+            // a.addFeature(Discriminators.Uri.TEXT, sentence.getText());
             resultsView.add(a);
         }
 
         resultsView.addContains(Discriminators.Uri.SENTENCE, this.getClass().getName(), "sentence:uiuc");
 
-
-        container.addView(resultsView);
         data = new DataContainer(container);
 
         return data.asPrettyJson();

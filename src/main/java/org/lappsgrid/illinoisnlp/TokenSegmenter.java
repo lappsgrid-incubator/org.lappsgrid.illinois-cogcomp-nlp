@@ -6,6 +6,8 @@ import edu.illinois.cs.cogcomp.nlp.tokenizer.IllinoisTokenizer;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import org.lappsgrid.api.ProcessingService;
 import org.lappsgrid.discriminator.Discriminators;
+import org.lappsgrid.metadata.IOSpecification;
+import org.lappsgrid.metadata.ServiceMetadata;
 import org.lappsgrid.serialization.Data;
 import org.lappsgrid.serialization.DataContainer;
 import org.lappsgrid.serialization.Serializer;
@@ -17,12 +19,36 @@ import org.lappsgrid.vocabulary.Features;
 import java.util.Map;
 
 public class TokenSegmenter implements ProcessingService {
+
+    private String metadata;
+
     public TokenSegmenter() {
+        ServiceMetadata md = new ServiceMetadata();
+
+        md.setName(this.getClass().getName());
+        md.setAllow(Discriminators.Uri.ANY);
+        md.setDescription("UIUC Token Segmenter");
+        md.setVendor("http://www.lappsgrid.org");
+        md.setLicense(Discriminators.Uri.APACHE2);
+
+        IOSpecification requires = new IOSpecification();
+        requires.addFormat(Discriminators.Uri.TEXT);
+        requires.addLanguage("en");
+
+        IOSpecification produces = new IOSpecification();
+        produces.addFormat(Discriminators.Uri.LAPPS);
+        produces.addLanguage("en");
+
+        md.setRequires(requires);
+        md.setProduces(produces);
+
+        Data<ServiceMetadata> data = new Data<>(Discriminators.Uri.META, md);
+        metadata = data.asPrettyJson();
     }
 
     @Override
     public String getMetadata() {
-        return null;
+        return metadata;
     }
 
 
@@ -66,9 +92,9 @@ public class TokenSegmenter implements ProcessingService {
             IntPair offsets = ta.getTokenCharacterOffset(i);
             int start = offsets.getFirst();
             int end = offsets.getSecond() - 1;
-            Annotation a = new Annotation("tok" + i , Features.Token.WORD, start, end);
+            Annotation a = new Annotation("tok" + i , Discriminators.Uri.TOKEN, start, end);
             a.setAtType(Discriminators.Uri.TOKEN);
-            a.addFeature(Discriminators.Uri.TOKEN, token);
+            a.addFeature(Features.Token.WORD, token);
             resultsView.add(a);
         }
 
