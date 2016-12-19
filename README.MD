@@ -7,7 +7,7 @@ Each tool requires a LAPPS Grid Data object with the discriminator: [Discriminat
 # Output
 The output will be a Data object in the LAPPS Interchange format ([LIF](http://vocab.lappsgrid.org/ns/media/jsonld#lif)).
 
-### Chunker
+## Chunker
 The Chunker creates annotations of the type [chunk](http://vocab.lappsgrid.org/Chunk) for each chunk.
 
 <details>
@@ -198,7 +198,7 @@ The Chunker creates annotations of the type [chunk](http://vocab.lappsgrid.org/C
 ```
 </details>
 
-### Lemmatizer
+## Lemmatizer
 The Lemmatizer creates [Token](http://vocab.lappsgrid.org/Token) annotations for each token with the word and lemma as features along with the starting and ending positions of the token.
 <details>
 <summary> Example Output </summary>
@@ -378,7 +378,7 @@ The Lemmatizer creates [Token](http://vocab.lappsgrid.org/Token) annotations for
 ````
 </details>
 
-### Named Entity Recognizer
+## Named Entity Recognizer
 The Named Entity Recognizer produces annotations of the types [Date](http://vocab.lappsgrid.org/Date), [Location](http://vocab.lappsgrid.org/Location), [Organization](http://vocab.lappsgrid.org/Organization), [Person](http://vocab.lappsgrid.org/Person), or [Annotation](http://vocab.lappsgrid.org/Annotation.html) (if the named entity does not match the first 4) for each named entity depending on which type it is. It also includes the starting and ending positions of each named entity.
 <details>
 <summary> Example Output </summary>
@@ -483,7 +483,7 @@ The Named Entity Recognizer produces annotations of the types [Date](http://voca
 ````
 </details>
 
-### Part of Speech Tagger
+## Part of Speech Tagger
 <details>
 <summary> Example Output </summary>
 The Part of Speech Tagger creates [part of speech token](http://vocab.lappsgrid.org/Token#pos) annotations for each token with the starting and ending positions of the token.
@@ -623,7 +623,7 @@ The Part of Speech Tagger creates [part of speech token](http://vocab.lappsgrid.
 ````
 </details>
 
-### Sentence Segmenter
+## Sentence Segmenter
 The Sentence Segmenter produces [Sentence](http://vocab.lappsgrid.org/Sentence) annotations for each sentence.
 <details>
 <summary> Example Output </summary>
@@ -737,7 +737,7 @@ The Sentence Segmenter produces [Sentence](http://vocab.lappsgrid.org/Sentence) 
 ```
 </details>
 
-### Token Segmenter
+## Token Segmenter
 The Token Segmenter produces a [Token](http://vocab.lappsgrid.org/Token) annotation for each token along with their starting and ending positions.
 <details>
 <summary> Example Output </summary>
