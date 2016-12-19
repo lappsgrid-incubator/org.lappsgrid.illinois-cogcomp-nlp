@@ -9,7 +9,10 @@ The output will be a Data object in the LAPPS Interchange format ([LIF](http://v
 
 ### Chunker
 The Chunker creates annotations of the type [chunk](http://vocab.lappsgrid.org/Chunk) for each chunk.
-````json
+
+<details>
+<summary> Example Output </summary>
+```json
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
   "payload" : {
@@ -192,7 +195,8 @@ The Chunker creates annotations of the type [chunk](http://vocab.lappsgrid.org/C
   },
   "parameters" : { }
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-````
+```
+</details>
 
 ### Lemmatizer
 The Lemmatizer creates [Token](http://vocab.lappsgrid.org/Token) annotations for each token with the word and lemma as features along with the starting and ending positions of the token.
@@ -726,7 +730,7 @@ The Sentence Segmenter produces [Sentence](http://vocab.lappsgrid.org/Sentence) 
 ### Token Segmenter
 The Token Segmenter produces a [Token](http://vocab.lappsgrid.org/Token) annotation for each token along with their starting and ending positions.
 
-````json
+````json 
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
   "payload" : {
