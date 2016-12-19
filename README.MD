@@ -484,9 +484,9 @@ The Named Entity Recognizer produces annotations of the types [Date](http://voca
 </details>
 
 ## Part of Speech Tagger
+The Part of Speech Tagger creates [part of speech token](http://vocab.lappsgrid.org/Token#pos) annotations for each token with the starting and ending positions of the token.
 <details>
 <summary> Example Output </summary>
-The Part of Speech Tagger creates [part of speech token](http://vocab.lappsgrid.org/Token#pos) annotations for each token with the starting and ending positions of the token.
 ````json
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
