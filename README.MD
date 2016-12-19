@@ -200,6 +200,8 @@ The Chunker creates annotations of the type [chunk](http://vocab.lappsgrid.org/C
 
 ### Lemmatizer
 The Lemmatizer creates [Token](http://vocab.lappsgrid.org/Token) annotations for each token with the word and lemma as features along with the starting and ending positions of the token.
+<details>
+<summary> Example Output </summary>
 ````json
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
@@ -374,10 +376,12 @@ The Lemmatizer creates [Token](http://vocab.lappsgrid.org/Token) annotations for
   "parameters" : { }
 }
 ````
+</details>
 
 ### Named Entity Recognizer
 The Named Entity Recognizer produces annotations of the types [Date](http://vocab.lappsgrid.org/Date), [Location](http://vocab.lappsgrid.org/Location), [Organization](http://vocab.lappsgrid.org/Organization), [Person](http://vocab.lappsgrid.org/Person), or [Annotation](http://vocab.lappsgrid.org/Annotation.html) (if the named entity does not match the first 4) for each named entity depending on which type it is. It also includes the starting and ending positions of each named entity.
-
+<details>
+<summary> Example Output </summary>
 ````json
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
@@ -477,8 +481,11 @@ The Named Entity Recognizer produces annotations of the types [Date](http://voca
   "parameters" : { }
 }
 ````
+</details>
 
 ### Part of Speech Tagger
+<details>
+<summary> Example Output </summary>
 The Part of Speech Tagger creates [part of speech token](http://vocab.lappsgrid.org/Token#pos) annotations for each token with the starting and ending positions of the token.
 ````json
 {
@@ -614,10 +621,12 @@ The Part of Speech Tagger creates [part of speech token](http://vocab.lappsgrid.
   "parameters" : { }
 }
 ````
+</details>
 
 ### Sentence Segmenter
 The Sentence Segmenter produces [Sentence](http://vocab.lappsgrid.org/Sentence) annotations for each sentence.
-
+<details>
+<summary> Example Output </summary>
 ```json
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
@@ -726,10 +735,12 @@ The Sentence Segmenter produces [Sentence](http://vocab.lappsgrid.org/Sentence) 
   "parameters" : { }
 }
 ```
+</details>
 
 ### Token Segmenter
 The Token Segmenter produces a [Token](http://vocab.lappsgrid.org/Token) annotation for each token along with their starting and ending positions.
-
+<details>
+<summary> Example Output </summary>
 ````json 
 {
   "discriminator" : "http://vocab.lappsgrid.org/ns/media/jsonld#lif",
@@ -1294,3 +1305,4 @@ The Token Segmenter produces a [Token](http://vocab.lappsgrid.org/Token) annotat
   "parameters" : { }
 }
 ````
+</details>
